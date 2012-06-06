@@ -54,7 +54,11 @@
     <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Configuration\IConfigurationSettings.cs" />
     <Compile Include="ContentProcessor\ContentProcessor.cs" />
+    <Compile Include="ContentProcessor\FrontMatter.cs" />
+    <Compile Include="ContentProcessor\Post.cs" />
+    <Compile Include="ContentProcessor\Layout.cs" />
     <Compile Include="ContentProcessor\IContentProcessor.cs" />
+    <Compile Include="ContentProcessor\Include.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

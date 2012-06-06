@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Hyde.Core.Configuration;
 using Hyde.Core.ContentProcessor;
 
@@ -20,10 +17,10 @@ namespace Hyde
                 return -1;
             }
 
-            var configurationPath = args[0];
-            var configuration = new ConfigurationSettings(configurationPath);
+            var configurationFilePath = args[0];
+            var configuration = new ConfigurationSettings(configurationFilePath);
 
-            var contentProcessor = new ContentProcessor(configuration.Source, configuration.Destination);
+            var contentProcessor = new ContentProcessor(configuration);
             contentProcessor.Process();
 
             return 0;

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using YamlDotNet.RepresentationModel;
 
 namespace Hyde.Core.Configuration
 {
     public class ConfigurationSettings : IConfigurationSettings
     {
+        public string Path { get; private set; }
         public string Source { get; private set; }
         public string Destination { get; private set; }
+        public string Permalink { get; private set; }
+        public IEnumerable<string> Exclude { get; private set; }
 
         public ConfigurationSettings(string configurationPath)
         {
@@ -24,9 +26,10 @@ namespace Hyde.Core.Configuration
                 throw new FileNotFoundException("File not found", configurationPath);
             }
 
-            Source = Path.GetDirectoryName(configurationPath);
-            Destination = Path.Combine(Source, "_site");
-
+            Path = configurationPath;
+            Source = System.IO.Path.GetDirectoryName(configurationPath);
+            Destination = System.IO.Path.GetDirectoryName(configurationPath);
+            Exclude = new List<string>();
             Parse(configurationPath);
         }
 
@@ -34,9 +37,9 @@ namespace Hyde.Core.Configuration
         {
             var yamlStream = new YamlStream();
             var fileText = File.ReadAllText(configurationPath);
-            using (var fileReader = new StringReader(fileText))
+            using (var stringReader = new StringReader(fileText))
             {
-                yamlStream.Load(fileReader);
+                yamlStream.Load(stringReader);
             }
 
             var mapping = (YamlMappingNode)yamlStream.Documents[0].RootNode;
@@ -50,6 +53,12 @@ namespace Hyde.Core.Configuration
                         break;
                     case "destination":
                         Destination = entry.Value.ToString();
+                        break;
+                    case "permalink":
+                        Permalink = entry.Value.ToString();
+                        break;
+                    case "exclude":
+                        Exclude = ((YamlSequenceNode)entry.Value).Children.Select(n => System.IO.Path.Combine(Source, n.ToString()));
                         break;
                     default:
                         break;
