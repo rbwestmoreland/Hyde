@@ -4,9 +4,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
 
-namespace Hyde.Core.ContentProcessor
+namespace Hyde.Core.Content
 {
-    internal class FrontMatter
+    public class FrontMatter
     {
         public string Path { get; private set; }
         public string Title { get; private set; }
@@ -41,46 +41,38 @@ namespace Hyde.Core.ContentProcessor
                 var regex = new Regex(@"^(---\s)([\s\S]+?)(\s---)");
                 var yamlFrontMatter = regex.Match(fileText).Value;
 
-                if (regex.IsMatch(fileText))
+                using (var stringReader = new StringReader(yamlFrontMatter))
                 {
-                    try
-                    {
-                        using (var stringReader = new StringReader(yamlFrontMatter))
-                        {
-                            yamlStream.Load(stringReader);
-                        }
+                    yamlStream.Load(stringReader);
+                }
 
-                        var mapping = (YamlMappingNode)yamlStream.Documents[0].RootNode;
+                var mapping = (YamlMappingNode)yamlStream.Documents[0].RootNode;
 
-                        foreach (var node in mapping.Children)
-                        {
-                            switch (node.Key.ToString().ToLower())
-                            {
-                                case "title":
-                                    Title = node.Value.ToString();
-                                    break;
-                                case "layout":
-                                    Layout = node.Value.ToString();
-                                    break;
-                                case "permalink":
-                                    Permalink = node.Value.ToString();
-                                    break;
-                                case "published":
-                                    Published = !node.Value.ToString().Equals(bool.FalseString);
-                                    break;
-                                default:
-                                    Other.Add(node.Key.ToString().ToLower(), node.Value.ToString().ToLower());
-                                    break;
-                            }
-                        }
-                    }
-                    catch (Exception)
+                foreach (var node in mapping.Children)
+                {
+                    switch (node.Key.ToString().ToLower())
                     {
+                        case "title":
+                            Title = node.Value.ToString();
+                            break;
+                        case "layout":
+                            Layout = node.Value.ToString();
+                            break;
+                        case "permalink":
+                            Permalink = node.Value.ToString();
+                            break;
+                        case "published":
+                            Published = !node.Value.ToString().Equals(bool.FalseString);
+                            break;
+                        default:
+                            Other.Add(node.Key.ToString().ToLower(), node.Value.ToString().ToLower());
+                            break;
                     }
                 }
             }
             catch (Exception)
             {
+                throw new FormatException("Unable to parse Front Matter");
             }
         }
 

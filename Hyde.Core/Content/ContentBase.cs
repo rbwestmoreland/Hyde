@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Hyde.Core.ContentProcessor
+namespace Hyde.Core.Content
 {
-    internal class Include
+    public class ContentBase
     {
         public string Path { get; private set; }
-        public string Name { get; private set; }
         public string Extension { get; private set; }
+        public FrontMatter FrontMatter { get; private set; }
 
-        public Include(string path)
+        public ContentBase(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -16,25 +19,11 @@ namespace Hyde.Core.ContentProcessor
             }
 
             Path = path;
-            Name = ParseName(path);
             Extension = ParseExtension(path);
-        }
 
-        private string ParseName(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentNullException("path");
-            }
-
-            try
-            {
-                return System.IO.Path.GetFileNameWithoutExtension(path);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException("Unable to parse name");
-            }
+            var frontMatter = default(FrontMatter);
+            FrontMatter.TryParse(path, out frontMatter);
+            FrontMatter = frontMatter;
         }
 
         private string ParseExtension(string path)

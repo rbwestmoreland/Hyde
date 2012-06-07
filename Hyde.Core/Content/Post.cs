@@ -1,31 +1,21 @@
 ﻿using System;
 
-namespace Hyde.Core.ContentProcessor
+namespace Hyde.Core.Content
 {
-    internal class Post
+    public class Post : ContentBase
     {
-        public string Path { get; private set; }
         public int Year { get; private set; }
         public int Month { get; private set; }
         public int Day { get; private set; }
         public string Title { get; private set; }
-        public string Extension { get; private set; }
-        public FrontMatter FrontMatter { get; private set; }
 
         public Post(string path)
+            : base(path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentNullException("path");
-            }
-
-            Path = path;
             Year = ParseYear(path);
             Month = ParseMonth(path);
             Day = ParseDay(path);
             Title = ParseTitle(path);
-            Extension = ParseExtension(path);
-            FrontMatter = new FrontMatter(path);
         }
 
         private int ParseYear(string path)

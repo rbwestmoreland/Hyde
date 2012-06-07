@@ -5,16 +5,16 @@ using System.Text;
 using Hyde.Core.Configuration;
 using System.IO;
 
-namespace Hyde.Core.ContentProcessor
+namespace Hyde.Core.Content
 {
-    internal class ContentIndex
+    public class ContentIndex : IContentIndex
     {
-        private IConfigurationSettings ConfigurationSettings { get; set; }
+        public IConfigurationSettings ConfigurationSettings { get; private set; }
         public IEnumerable<string> AllFiles { get; private set; }
         public IEnumerable<Include> Includes { get; private set; }
         public IEnumerable<Layout> Layouts { get; private set; }
         public IEnumerable<Post> Posts { get; private set; }
-        public IEnumerable<string> Other { get; private set; }
+        public IEnumerable<ContentBase> Other { get; private set; }
 
         public ContentIndex(IConfigurationSettings configurationSettings)
         {
@@ -32,12 +32,7 @@ namespace Hyde.Core.ContentProcessor
             Includes = GetAllIncludes(AllFiles);
             Layouts = GetAllLayouts(AllFiles);
             Posts = GetAllPosts(AllFiles);
-            Other = AllFiles
-                .Except(Includes.Select(i => i.Path))
-                .Except(Layouts.Select(l => l.Path))
-                .Except(Posts.Select(p => p.Path))
-                .Except(new string[] { ConfigurationSettings.Path })
-                .Except(ConfigurationSettings.Exclude);
+            Other = GetAllOtherContent(AllFiles, Includes, Layouts, Posts);
         }
 
         private IEnumerable<string> GetAllFiles(string directory)
@@ -65,8 +60,8 @@ namespace Hyde.Core.ContentProcessor
 
             foreach (var path in paths)
             {
-                var relativePath = path.Substring(ConfigurationSettings.Source.Length).TrimStart('\\');
-                if (relativePath.StartsWith("_includes"))
+                var relativePath = path.Substring(ConfigurationSettings.Source.Length);
+                if (relativePath.StartsWith("\\_includes\\"))
                 {
                     includes.Add(new Include(path));
                 }
@@ -77,34 +72,53 @@ namespace Hyde.Core.ContentProcessor
 
         private IEnumerable<Layout> GetAllLayouts(IEnumerable<string> paths)
         {
-            var includes = new List<Layout>();
+            var layouts = new List<Layout>();
 
             foreach (var path in paths)
             {
-                var relativePath = path.Substring(ConfigurationSettings.Source.Length).TrimStart('\\');
-                if (relativePath.StartsWith("_layouts"))
+                var relativePath = path.Substring(ConfigurationSettings.Source.Length);
+                if (relativePath.StartsWith("\\_layouts\\"))
                 {
-                    includes.Add(new Layout(path));
+                    layouts.Add(new Layout(path));
                 }
             }
 
-            return includes;
+            return layouts;
         }
 
         private IEnumerable<Post> GetAllPosts(IEnumerable<string> paths)
         {
-            var includes = new List<Post>();
+            var posts = new List<Post>();
 
             foreach (var path in paths)
             {
-                var relativePath = path.Substring(ConfigurationSettings.Source.Length).TrimStart('\\');
-                if (relativePath.StartsWith("_posts"))
+                var relativePath = path.Substring(ConfigurationSettings.Source.Length);
+                if (relativePath.StartsWith("\\_posts\\"))
                 {
-                    includes.Add(new Post(path));
+                    posts.Add(new Post(path));
                 }
             }
 
-            return includes;
+            return posts;
+        }
+
+        private IEnumerable<ContentBase> GetAllOtherContent(IEnumerable<string> allFiles, IEnumerable<Include> includes, IEnumerable<Layout> layouts, IEnumerable<Post> posts)
+        {
+            var otherContent = new List<ContentBase>();
+
+            var paths = allFiles
+                .Except(includes.Select(i => i.Path))
+                .Except(layouts.Select(l => l.Path))
+                .Except(posts.Select(p => p.Path))
+                .Except(new string[] { ConfigurationSettings.Path })
+                .Except(ConfigurationSettings.Exclude);
+
+            foreach (var path in paths)
+            {
+                otherContent.Add(new ContentBase(path));
+            }
+
+            return otherContent;
         }
     }
 }

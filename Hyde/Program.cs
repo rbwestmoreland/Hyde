@@ -1,6 +1,6 @@
 ﻿using System;
 using Hyde.Core.Configuration;
-using Hyde.Core.ContentProcessor;
+using Hyde.Core.Content;
 
 namespace Hyde
 {
@@ -18,9 +18,11 @@ namespace Hyde
             }
 
             var configurationPath = args[0];
-            var configuration = new ConfigurationSettings(configurationPath);
+            var configurationSettings = new ConfigurationSettings(configurationPath);
 
-            var contentProcessor = new ContentProcessor(configuration);
+            var contentIndex = new ContentIndex(configurationSettings);
+
+            var contentProcessor = new ContentProcessor(contentIndex);
             contentProcessor.Process();
 
             return 0;
