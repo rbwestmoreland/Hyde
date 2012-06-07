@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using YamlDotNet.RepresentationModel;
 using System.Text.RegularExpressions;
+using YamlDotNet.RepresentationModel;
 
 namespace Hyde.Core.ContentProcessor
 {
@@ -29,15 +29,15 @@ namespace Hyde.Core.ContentProcessor
             Categories = new string[] { };
             Tags = new string[] { };
             Other = new Dictionary<string, string>();
-            ParseFrontMatter(path);
+            Parse(path);
         }
 
-        protected virtual void ParseFrontMatter(string filePath)
+        protected virtual void Parse(string path)
         {
             try
             {
                 var yamlStream = new YamlStream();
-                var fileText = File.ReadAllText(filePath);
+                var fileText = File.ReadAllText(path);
                 var regex = new Regex(@"^(---\s)([\s\S]+?)(\s---)");
                 var yamlFrontMatter = regex.Match(fileText).Value;
 

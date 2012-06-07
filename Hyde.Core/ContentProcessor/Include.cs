@@ -8,37 +8,49 @@ namespace Hyde.Core.ContentProcessor
         public string Name { get; private set; }
         public string Extension { get; private set; }
 
-        public Include(string name, string path)
+        public Include(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException("name");
-            }
-
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException("path");
             }
 
             Path = path;
-            Name = name;
-            ParseExtension(name);
+            Name = ParseName(path);
+            Extension = ParseExtension(path);
         }
 
-        private void ParseExtension(string name)
+        private string ParseName(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException("path");
             }
 
             try
             {
-                Extension = System.IO.Path.GetExtension(name);
+                return System.IO.Path.GetFileNameWithoutExtension(path);
             }
             catch (Exception)
             {
-                throw new ArgumentException("Invalid post file extension");
+                throw new ArgumentException("Unable to parse name");
+            }
+        }
+
+        private string ParseExtension(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException("path");
+            }
+
+            try
+            {
+                return System.IO.Path.GetExtension(path);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Unable to parse extension");
             }
         }
     }

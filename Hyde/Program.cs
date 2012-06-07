@@ -11,14 +11,14 @@ namespace Hyde
             if (args.Length != 1)
             {
                 Console.WriteLine("Hyde requires arguments.");
-                Console.WriteLine("Hyde.exe <configuration-file-path>");
+                Console.WriteLine("Hyde.exe <configuration-path>");
                 Console.WriteLine("Paths that contain spaces should be surrounded by double-quotes.");
                 Console.ReadKey();
                 return -1;
             }
 
-            var configurationFilePath = args[0];
-            var configuration = new ConfigurationSettings(configurationFilePath);
+            var configurationPath = args[0];
+            var configuration = new ConfigurationSettings(configurationPath);
 
             var contentProcessor = new ContentProcessor(configuration);
             contentProcessor.Process();

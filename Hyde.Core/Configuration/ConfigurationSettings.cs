@@ -14,29 +14,29 @@ namespace Hyde.Core.Configuration
         public string Permalink { get; private set; }
         public IEnumerable<string> Exclude { get; private set; }
 
-        public ConfigurationSettings(string configurationPath)
+        public ConfigurationSettings(string path)
         {
-            if (string.IsNullOrWhiteSpace(configurationPath))
+            if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException("configurationPath");
             }
 
-            if (!File.Exists(configurationPath))
+            if (!File.Exists(path))
             {
-                throw new FileNotFoundException("File not found", configurationPath);
+                throw new FileNotFoundException("File not found", path);
             }
 
-            Path = configurationPath;
-            Source = System.IO.Path.GetDirectoryName(configurationPath);
-            Destination = System.IO.Path.GetDirectoryName(configurationPath);
+            Path = path;
+            Source = System.IO.Path.GetDirectoryName(path);
+            Destination = System.IO.Path.GetDirectoryName(path);
             Exclude = new List<string>();
-            Parse(configurationPath);
+            Parse(path);
         }
 
-        private void Parse(string configurationPath)
+        private void Parse(string path)
         {
             var yamlStream = new YamlStream();
-            var fileText = File.ReadAllText(configurationPath);
+            var fileText = File.ReadAllText(path);
             using (var stringReader = new StringReader(fileText))
             {
                 yamlStream.Load(stringReader);

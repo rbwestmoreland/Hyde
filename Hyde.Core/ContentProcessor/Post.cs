@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Hyde.Core.ContentProcessor
 {
@@ -13,92 +12,134 @@ namespace Hyde.Core.ContentProcessor
         public string Extension { get; private set; }
         public FrontMatter FrontMatter { get; private set; }
 
-        public Post(string name, string path)
+        public Post(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException("name");
-            }
-
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException("path");
             }
 
             Path = path;
-            ParseDate(name);
-            ParseTitle(name);
-            ParseExtension(name);
+            Year = ParseYear(path);
+            Month = ParseMonth(path);
+            Day = ParseDay(path);
+            Title = ParseTitle(path);
+            Extension = ParseExtension(path);
             FrontMatter = new FrontMatter(path);
         }
 
-        private void ParseDate(string name)
+        private int ParseYear(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException("path");
             }
 
-            if (name.Length < 10)
+            if (path.Length < 10)
             {
-                throw new ArgumentException("name");
+                throw new ArgumentException("path");
             }
 
             try
             {
-                var yearString = name.Substring(0, 4);
-                var monthString = name.Substring(5, 2);
-                var dayString = name.Substring(8, 2);
-
-                Year = int.Parse(yearString);
-                Month = int.Parse(monthString);
-                Day = int.Parse(dayString);
-
-                var date = new DateTime(Year, Month, Day);
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                var yearString = fileName.Substring(0, 4);
+                var year = int.Parse(yearString);
+                return year;
             }
             catch (Exception)
             {
-                throw new ArgumentException("Invalid post date format");
+                throw new ArgumentException("Unable to parse year");
             }
         }
 
-        private void ParseTitle(string name)
+        private int ParseMonth(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException("path");
             }
 
-            if (name.Length < 12)
+            if (path.Length < 10)
             {
-                throw new ArgumentException("name");
+                throw new ArgumentException("path");
             }
 
             try
             {
-                var nameWithoutDate = name.Substring(11);
-                Title = System.IO.Path.GetFileNameWithoutExtension(nameWithoutDate);
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                var monthString = fileName.Substring(5, 2);
+                var month = int.Parse(monthString);
+                return month;
             }
             catch (Exception)
             {
-                throw new ArgumentException("Invalid post title format");
+                throw new ArgumentException("Unable to parse month");
             }
         }
 
-        private void ParseExtension(string name)
+        private int ParseDay(string path)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException("path");
+            }
+
+            if (path.Length < 10)
+            {
+                throw new ArgumentException("path");
             }
 
             try
             {
-                Extension = System.IO.Path.GetExtension(name);
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                var dayString = fileName.Substring(8, 2);
+                var day = int.Parse(dayString);
+                return day;
             }
             catch (Exception)
             {
-                throw new ArgumentException("Invalid post file extension");
+                throw new ArgumentException("Unable to parse day");
+            }
+        }
+
+        private string ParseTitle(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException("path");
+            }
+
+            if (path.Length < 12)
+            {
+                throw new ArgumentException("path");
+            }
+
+            try
+            {
+                var nameWithoutDate = System.IO.Path.GetFileNameWithoutExtension(path).Substring(11);
+                return System.IO.Path.GetFileNameWithoutExtension(nameWithoutDate);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Unable to parse title");
+            }
+        }
+
+        private string ParseExtension(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException("path");
+            }
+
+            try
+            {
+                return System.IO.Path.GetExtension(path);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Unable to parse extension");
             }
         }
     }
