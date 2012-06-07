@@ -17,13 +17,26 @@ namespace Hyde
                 return -1;
             }
 
+            //Load configuration
+            Console.WriteLine("Loading configuration...");
             var configurationPath = args[0];
             var configurationSettings = new ConfigurationSettings(configurationPath);
+            Console.WriteLine("Loading configuration complete.");
 
+            //Index content
+            Console.WriteLine("Indexing source content...");
             var contentIndex = new ContentIndex(configurationSettings);
+            contentIndex.Index();
+            Console.WriteLine("Indexing source content complete.");
 
+            //Process content
+            Console.WriteLine("Processing source content...");
             var contentProcessor = new ContentProcessor(contentIndex);
             contentProcessor.Process();
+            Console.WriteLine("Processing source content complete.");
+
+            //Write to destination
+            //todo
 
             return 0;
         }

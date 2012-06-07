@@ -20,7 +20,7 @@ namespace Hyde.Core.Content
 
         public void Process()
         {
-            ContentIndex.Analyze();
+            ContentIndex.Index();
 
             foreach (var other in ContentIndex.Other)
             {

@@ -16,6 +16,6 @@ namespace Hyde.Core.Content
         IEnumerable<Post> Posts { get; }
         IEnumerable<ContentBase> Other { get; }
 
-        void Analyze();
+        void Index();
     }
 }

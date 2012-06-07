@@ -26,7 +26,7 @@ namespace Hyde.Core.Content
             ConfigurationSettings = configurationSettings;
         }
 
-        public void Analyze()
+        public void Index()
         {
             AllFiles = GetAllFiles(ConfigurationSettings.Source);
             Includes = GetAllIncludes(AllFiles);
