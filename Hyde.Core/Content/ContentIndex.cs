@@ -46,12 +46,14 @@ namespace Hyde.Core.Content
 
             files.AddRange(Directory.GetFiles(directory));
 
-            foreach (var childDirectory in Directory.GetDirectories(directory))
+            foreach (var childDirectory in Directory.GetDirectories(directory).Where(d => !Path.GetFileName(d).StartsWith(".")))
             {
                 files.AddRange(GetAllFiles(childDirectory));
             }
 
-            return files;
+            return files.Where(f => !Path.GetFileName(f).StartsWith("."))
+                .Except(new string[] { ConfigurationSettings.Path })
+                .Except(ConfigurationSettings.Exclude);
         }
 
         private IEnumerable<Include> GetAllIncludes(IEnumerable<string> paths)
@@ -61,7 +63,7 @@ namespace Hyde.Core.Content
             foreach (var path in paths)
             {
                 var relativePath = path.Substring(ConfigurationSettings.Source.Length);
-                if (relativePath.StartsWith("\\_includes\\"))
+                if (relativePath.StartsWith(string.Format("{0}_includes{0}", System.IO.Path.DirectorySeparatorChar)))
                 {
                     includes.Add(new Include(path));
                 }
@@ -77,7 +79,7 @@ namespace Hyde.Core.Content
             foreach (var path in paths)
             {
                 var relativePath = path.Substring(ConfigurationSettings.Source.Length);
-                if (relativePath.StartsWith("\\_layouts\\"))
+                if (relativePath.StartsWith(string.Format("{0}_layouts{0}", System.IO.Path.DirectorySeparatorChar)))
                 {
                     layouts.Add(new Layout(path));
                 }
@@ -93,7 +95,7 @@ namespace Hyde.Core.Content
             foreach (var path in paths)
             {
                 var relativePath = path.Substring(ConfigurationSettings.Source.Length);
-                if (relativePath.StartsWith("\\_posts\\"))
+                if (relativePath.StartsWith(string.Format("{0}_posts{0}", System.IO.Path.DirectorySeparatorChar)))
                 {
                     posts.Add(new Post(path));
                 }
@@ -109,9 +111,7 @@ namespace Hyde.Core.Content
             var paths = allFiles
                 .Except(includes.Select(i => i.Path))
                 .Except(layouts.Select(l => l.Path))
-                .Except(posts.Select(p => p.Path))
-                .Except(new string[] { ConfigurationSettings.Path })
-                .Except(ConfigurationSettings.Exclude);
+                .Except(posts.Select(p => p.Path));
 
             foreach (var path in paths)
             {

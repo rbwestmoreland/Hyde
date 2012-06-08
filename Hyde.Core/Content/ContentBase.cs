@@ -10,6 +10,7 @@ namespace Hyde.Core.Content
         public string Path { get; private set; }
         public string Extension { get; private set; }
         public FrontMatter FrontMatter { get; private set; }
+        public bool HasFrontMatter { get { return FrontMatter != null; } }
 
         public ContentBase(string path)
         {
