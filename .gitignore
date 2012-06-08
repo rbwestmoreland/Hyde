@@ -108,5 +108,6 @@ UpgradeLog*.XML
 packages/
 
 # Project Specific
+!Build
 Build/artifacts
 _Test
